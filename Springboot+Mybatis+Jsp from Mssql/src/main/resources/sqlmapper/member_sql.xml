@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.spring.Springboot.dao.MemberDao">
+
+    <!--    // resultMap 사용_vo와의 맵핑_박차장님 요건  _// !mapper와 vo 연계_as구문 변경시에도 맵핑될 수 있음.!  //  !column_select 구문, jdbc,javatype 구분 잘 할 것! -->
+    <!--    <resultMap id="map_vo_study" type="com.spring.Springboot.vo.Vo_study">-->
+    <!--        <result column="KEY_ID" property="KEY_ID" jdbcType="CHAR" javaType="String" />-->
+    <!--        <result column="STUDY_DAY" property="STUDY_DAY" jdbcType="CHAR" javaType="String" />-->
+    <!--        <result column="CONTENTS" property="CONTENTS" jdbcType="CHAR" javaType="String" />-->
+    <!--        <result column="REG_DAY" property="REG_DAY" jdbcType="CHAR" javaType="String" />-->
+    <!--    </resultMap>-->
+
+    <!-- Member List -->
+    <select id="doMemberList"  resultType="com.spring.Springboot.vo.Vo_member">
+        SELECT convert(char(10),member_id,20) as member_id, login_id, password,name,role, convert(char(10),reg_day,120) as REG_DAY
+        FROM study_member
+--         Order by key_id _ 해당 번호로 찾으면 1번 뒤에 11번,
+    </select>
+
+    <!-- One row Select -->
+    <select id="doMemberListOne" resultType="com.spring.Springboot.vo.Vo_member">
+        SELECT convert(char(10),member_id,20) as member_id, login_id, password,name,role, convert(char(10),reg_day,120) as REG_DAY
+        FROM study_member
+        WHERE member_id = convert(#{strMemberId})
+    </select>
+
+    <!-- One row from ID Select -->
+    <select id="doMemberLogin" resultType="com.spring.Springboot.vo.Vo_member">
+        SELECT convert(char(10),member_id,20) as member_id, login_id, password,name,role, convert(char(10),reg_day,120) as REG_DAY
+        FROM study_member
+        WHERE login_id = #{strLoginId}
+    </select>
+
+    <!-- 멤버 수정 -->
+    <update id="doMemberUp" parameterType="com.spring.Springboot.vo.Vo_member">
+         Update  study_member
+        SET member_id = #{member_id} , name=#{name} ,role=#{role}, reg_day=GETDATE()
+        WHERE member_id =#{member_id}
+    </update>
+
+    <!-- 멤버 삭제 -->
+    <delete id="doMemberDel">
+        Delete from  study_member
+        WHERE member_id =#{member_id}
+    </delete>
+
+    <!-- 멤버 등록 Insert -->
+    <insert id="doMemberIns">
+        Insert into study_member(member_id, name, role, reg_day)
+        Values (#{member_id},#{name}, #{role}, GETDATE())
+    </insert>
+</mapper>

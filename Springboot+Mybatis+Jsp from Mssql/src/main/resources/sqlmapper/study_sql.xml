@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--맵퍼는 서버 재시작 시에, 적용된다.-->
+
+<mapper namespace="com.spring.Springboot.dao.StudyDao">
+
+<!--    // resultMap 사용_vo와의 맵핑_박차장님 요건  _// !mapper와 vo 연계_as구문 변경시에도 맵핑될 수 있음.!  //  !column_select 구문, jdbc,javatype 구분 잘 할 것! -->
+<!--    <resultMap id="map_vo_study" type="com.spring.Springboot.vo.Vo_study">-->
+<!--        <result column="KEY_ID" property="KEY_ID" jdbcType="CHAR" javaType="String" />-->
+<!--        <result column="STUDY_DAY" property="STUDY_DAY" jdbcType="CHAR" javaType="String" />-->
+<!--        <result column="CONTENTS" property="CONTENTS" jdbcType="CHAR" javaType="String" />-->
+<!--        <result column="REG_DAY" property="REG_DAY" jdbcType="CHAR" javaType="String" />-->
+<!--    </resultMap>-->
+
+    <!--    //AS 구문의 컬럼값 변경에 대응한다. // 전체 조회-->
+    <select id="doStudyList"  resultType="com.spring.Springboot.vo.Vo_study">
+        SELECT convert(char(10),key_id,20) as KEY_ID, STUDY_DAY, CONTENTS, convert(char(10),reg_day,120) as REG_DAY
+        FROM study_record
+--         Order by key_id _ 해당 번호로 찾으면 1번 뒤에 11번,
+    </select>
+
+
+    <!--   one row selection.-->
+    <select id="doStudyListOne"  resultType="com.spring.Springboot.vo.Vo_study">
+        SELECT convert(char(10),key_id,20) as KEY_ID, STUDY_DAY, CONTENTS, convert(char(10),reg_day,120) as REG_DAY
+        FROM study_record
+        where key_id = #{strKeyId}  --mybatis 변수사용 _vo 객체에서 값을 가져옴.
+        Order by key_id
+
+    </select>
+
+    <!--   update.  _ID 값음 DAO 대응한다._parameter-던지는 값_SQL값들은 VO값에 대응 -->
+    <update id="doStudyUp"  parameterType="com.spring.Springboot.vo.Vo_study">
+        UPDATE study_record
+        SET study_day =#{STUDY_DAY}, contents=#{CONTENTS}, reg_day=GETDATE()
+        WHERE key_id =#{KEY_ID}
+--             // CONVERT(numberic,KEY_ID) _작성 하면, int로 받을 수 있다.
+    </update>
+<!--    //parametertype을 사용하지 않아도 매핑은 된다.???? _ 그렇지 않음.-->
+    <delete id="doStudyDel" parameterType="com.spring.Springboot.vo.Vo_study">
+        DELETE from study_record
+            WHERE key_id =#{KEY_ID}
+    </delete>
+
+    <insert id="doStudyIns" parameterType="com.spring.Springboot.vo.Vo_study">
+        insert into study_record(key_id, study_day,contents,reg_day)
+        values(#{KEY_ID},#{STUDY_DAY},#{CONTENTS},GETDATE());
+    </insert>
+
+</mapper>
